@@ -1,16 +1,30 @@
 from socket import *
+import argparse
+import sys
 
+def createParse():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--host', default='localhost')
+    parser.add_argument('-p', '--port', type=int, default=21567)
+    return parser
 
-tcpCli = socket(AF_INET, SOCK_STREAM)  # создание объекта сокета клиента
-tcpCli.connect(('localhost', 21567))   # подключение к серверу
+tcpCli = socket(AF_INET, SOCK_STREAM)
 
-while True:
-    data = input('> ')
-    if not data:
-        break
-    tcpCli.send(data.encode('utf-8'))   # запрос на сервер
-    data = tcpCli.recv(1024)
-    if not data:
-        break
-    print(data.decode('utf-8'))     # вывод сообщения с отрезком времени
-tcpCli.close()
+if __name__ == '__main__':
+    parser = createParse()
+    namespase = parser.parse_args(sys.argv[1:])
+    if namespase.host or namespase.port:
+        tcpCli.connect((namespase.host, namespase.port))
+
+    print(namespase)
+
+    while True:
+        data = input('> ')
+        if not data:
+            break
+        tcpCli.send(data.encode('utf-8'))
+        data = tcpCli.recv(1024)
+        if not data:
+            break
+        print(data.decode('utf-8'))
+    tcpCli.close()
